@@ -293,6 +293,8 @@
           <select id="indicadosCategoria"></select>
         </div>
         <button class="btn secondary" id="btnRecalcularIndicados">Recalcular</button>
+        <button class="btn" id="btnRevelarIndicados">Revelar</button>
+        <button class="btn secondary" id="btnOcultarIndicados" style="display:none">Ocultar</button>
         <div class="pill right"><span>Temporada:</span> <strong id="indSeason" class="gold">2026</strong></div>
       </div>
 
@@ -644,6 +646,8 @@ function toast(node, msg, cls=""){
 let DB = dbLoad();
 let session = lsGet("edb_session", { logged:false });
 let selectedFilmId = null;
+let indicadosRevelados = false; // modo surpresa
+
 
 function seasonsEnsure(){
   if(!DB.seasons || DB.seasons.length===0) DB.seasons=[DEFAULT_SEASON];
@@ -848,14 +852,16 @@ function renderFilmSelects(){
   if(selectedFilmId && films.some(x=>x.id===selectedFilmId)) sel.value=selectedFilmId;
   else if(films[0]){ selectedFilmId = films[0].id; sel.value=selectedFilmId; }
 
-  // category selects
+  // category selects (preserva seleção atual)
   const fillCat = (node)=>{
+    const prev = node.value;
     node.innerHTML="";
     CATEGORIES.forEach(c=>{
       const opt=document.createElement("option");
       opt.value=c.key; opt.textContent=c.label;
       node.appendChild(opt);
     });
+    if(prev && CATEGORIES.some(c=>c.key===prev)) node.value = prev;
   };
   fillCat(el("notaAtalho"));
   fillCat(el("indicadosCategoria"));
@@ -924,6 +930,7 @@ function saveNotas(){
   el("mediaGeralLabel").textContent = fmt(mediaGeral(f));
   toast(el("notaMsg"), "Notas salvas ✅", "ok");
   renderFilmTable(); // atualiza médias
+  indicadosRevelados = false;
   renderIndicados();
   renderVencedores();
 }
@@ -938,40 +945,59 @@ function renderIndicados(){
   const byId = Object.fromEntries(films.map(f=>[f.id,f]));
   const cat = getCategory(catKey);
 
-  let html = "";
-  if(ids.length===0){
-    html = `<div class="muted">Sem indicados (faltam notas nesta categoria).</div>`;
-  }else{
-    // rank for display
-    let ranked;
-    if(catKey==="melhorFilme"){
-      ranked = ids.map(id=>({id, v: mediaGeral(byId[id])}))
-        .sort((a,b)=>(b.v??-1)-(a.v??-1));
-    }else{
-      ranked = ids.map(id=>({id, v: clampScore((byId[id].scores||{})[catKey])}))
-        .sort((a,b)=>(b.v??-1)-(a.v??-1));
-    }
-
-    html += `<div class="kpi">
-      <span class="chip">Categoria: <b class="gold">${escapeHtml(cat.label)}</b></span>
-      <span class="chip">Qtd: <b class="gold">${ids.length}</b></span>
-    </div>`;
-    html += `<div class="hr"></div>`;
-    html += `<table><thead><tr><th>#</th><th>Indicado</th><th>Filme</th><th>Nota</th></tr></thead><tbody>`;
-    ranked.forEach((r,i)=>{
-      const f = byId[r.id];
-      const credit = creditText(f, catKey);
-      const indicado = credit ? credit : "—";
-      html += `<tr>
-        <td class="mono">${i+1}</td>
-        <td><b>${escapeHtml(indicado)}</b></td>
-        <td>${escapeHtml(f.nome||"")}</td>
-        <td class="mono gold">${fmt(r.v)}</td>
-      </tr>`;
-    });
-    html += `</tbody></table>`;
+  // modo surpresa: por padrão não mostra a lista até clicar em "Revelar"
+  const btnR = el("btnRevelarIndicados");
+  const btnO = el("btnOcultarIndicados");
+  if(btnR && btnO){
+    btnR.style.display = indicadosRevelados ? "none" : "inline-flex";
+    btnO.style.display = indicadosRevelados ? "inline-flex" : "none";
   }
-  el("indicadosLista").innerHTML = html;
+
+  // sempre mostra um resumo (sem revelar)
+  let out = "";
+  out += `<div class="kpi">
+    <span class="chip">Categoria: <b class="gold">${escapeHtml(cat.label)}</b></span>
+    <span class="chip">Qtd: <b class="gold">${ids.length}</b></span>
+    <span class="chip">Modo: <b class="gold">${indicadosRevelados ? "Revelado" : "Surpresa"}</b></span>
+  </div>`;
+  out += `<div class="hr"></div>`;
+
+  if(!indicadosRevelados){
+    out += `<div class="muted">Clique em <b>Revelar</b> para mostrar os indicados desta categoria.</div>`;
+    el("indicadosLista").innerHTML = out;
+    return;
+  }
+
+  if(ids.length===0){
+    out += `<div class="muted">Sem indicados (faltam notas válidas nesta categoria ou os filmes não concorrem).</div>`;
+    el("indicadosLista").innerHTML = out;
+    return;
+  }
+
+  // rank for display (agora revelado)
+  let ranked;
+  if(catKey==="melhorFilme"){
+    ranked = ids.map(id=>({id, v: mediaGeral(byId[id])}))
+      .sort((a,b)=>(b.v??-1)-(a.v??-1));
+  }else{
+    ranked = ids.map(id=>({id, v: clampScore((byId[id].scores||{})[catKey])}))
+      .sort((a,b)=>(b.v??-1)-(a.v??-1));
+  }
+
+  out += `<table><thead><tr><th>#</th><th>Indicado</th><th>Filme</th><th>Nota</th></tr></thead><tbody>`;
+  ranked.forEach((r,i)=>{
+    const f = byId[r.id];
+    const credit = creditText(f, catKey);
+    const indicado = credit ? credit : "—";
+    out += `<tr>
+      <td class="mono">${i+1}</td>
+      <td><b>${escapeHtml(indicado)}</b></td>
+      <td>${escapeHtml(f.nome||"")}</td>
+      <td class="mono gold">${fmt(r.v)}</td>
+    </tr>`;
+  });
+  out += `</tbody></table>`;
+  el("indicadosLista").innerHTML = out;
 }
 
 function renderVencedores(){
@@ -1139,6 +1165,7 @@ function promptSeason(){
   renderFilmSelects();
   renderFilmTable();
   renderNotas();
+  indicadosRevelados = false;
   renderIndicados();
   renderVencedores();
   renderCeremony();
@@ -1201,8 +1228,10 @@ function bind(){
     if(inp){ inp.scrollIntoView({behavior:"smooth", block:"center"}); inp.focus(); }
   });
 
-  el("indicadosCategoria").addEventListener("change", renderIndicados);
+  el("indicadosCategoria").addEventListener("change", ()=>{ indicadosRevelados = false; renderIndicados(); });
   el("btnRecalcularIndicados").addEventListener("click", ()=>setTimeout(renderIndicados, 0));
+  if(el("btnRevelarIndicados")) el("btnRevelarIndicados").addEventListener("click", ()=>{ indicadosRevelados = true; renderIndicados(); });
+  if(el("btnOcultarIndicados")) el("btnOcultarIndicados").addEventListener("click", ()=>{ indicadosRevelados = false; renderIndicados(); });
 
   el("vencedorCategoria").addEventListener("change", renderVencedores);
   el("btnRecalcularVencedores").addEventListener("click", renderVencedores);
@@ -1212,8 +1241,38 @@ function bind(){
   el("btnResetCer").addEventListener("click", resetCeremony);
 }
 
+
+function seedMercy(){
+  // Preenche dados de "Mercy (2026)" sem sobrescrever o que você já colocou.
+  const season = DB.currentSeason;
+  const films = seasonFilms(DB, season);
+  const f = films.find(x => (x.nome||"").toLowerCase().includes("mercy"));
+  if(!f) return;
+
+  f.credits = f.credits || {};
+  const setIfEmpty = (k, v)=>{
+    if(!f.credits[k] || !String(f.credits[k]).trim()) f.credits[k] = v;
+  };
+
+  // Fonte: Wikipedia/Rotten Tomatoes/Letterboxd/IMDb
+  setIfEmpty("diretor", "Timur Bekmambetov");
+  setIfEmpty("ator", "Chris Pratt");
+  setIfEmpty("atriz", "Rebecca Ferguson");
+  setIfEmpty("atrizCo", "Annabelle Wallis");
+  setIfEmpty("atorCo", "Chris Sullivan");
+  setIfEmpty("roteiroOrig", "Marco van Belle");
+  setIfEmpty("fotografia", "Khalid Mohtaseb");
+  setIfEmpty("editores", "Dody Dorn; Lam T. Nguyen; Austin Keeling");
+  setIfEmpty("designProducao", "Alex McDowell");
+
+  f.atualizadoEm = Date.now();
+  dbSave(DB);
+}
+
+
 function bootApp(){
   DB = dbLoad();
+  seedMercy();
   seasonsEnsure();
 
   // sempre iniciar em 2026 quando abrir o site
@@ -1227,6 +1286,7 @@ function bootApp(){
   renderFilmSelects();
   renderFilmTable();
   renderNotas();
+  indicadosRevelados = false;
   renderIndicados();
   renderVencedores();
   renderCeremony();
