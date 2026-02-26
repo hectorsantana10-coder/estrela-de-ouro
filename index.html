@@ -1,2 +1,1269 @@
-<h1>Estrela de Ouro</h1>
-<p>Site oficial da premiação.</p>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Estrela de Ouro — Sistema Oficial</title>
+  <style>
+    :root{
+      --bg:#0b0c10; --panel:#12141b; --panel2:#0f1117; --txt:#e8e8ea; --muted:#a9acb7;
+      --gold:#d4af37; --gold2:#f2d06b; --red:#ff4d4d; --ok:#33d17a; --line:#262a36;
+      --chip:#1b1f2b;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:radial-gradient(1200px 600px at 30% 0%, #121626 0%, var(--bg) 55%);
+      color:var(--txt); font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;}
+    a{color:var(--gold2)}
+    header{position:sticky;top:0;z-index:10;background:rgba(11,12,16,.85);backdrop-filter: blur(10px);
+      border-bottom:1px solid var(--line);}
+    .wrap{max-width:1100px;margin:0 auto;padding:14px 16px;}
+    .brand{display:flex;align-items:center;gap:10px}
+    .logo{width:34px;height:34px;border-radius:10px;background:linear-gradient(145deg,var(--gold2),var(--gold));
+      box-shadow:0 0 0 2px rgba(212,175,55,.12),0 12px 30px rgba(212,175,55,.18)}
+    h1{font-size:16px;margin:0}
+    .toprow{display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .tabs{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+    .tab{padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:rgba(18,20,27,.6);
+      color:var(--txt);cursor:pointer;font-weight:700;font-size:13px}
+    .tab.active{border-color:rgba(212,175,55,.65); box-shadow:0 0 0 3px rgba(212,175,55,.10) inset;}
+    .pill{display:inline-flex;gap:8px;align-items:center;padding:8px 10px;border:1px solid var(--line);
+      border-radius:999px;background:rgba(18,20,27,.6);color:var(--muted);font-size:12px}
+    .btn{padding:10px 12px;border:none;border-radius:12px;background:linear-gradient(145deg,var(--gold2),var(--gold));
+      color:#131313;font-weight:900;cursor:pointer}
+    .btn.secondary{background:transparent;border:1px solid var(--line);color:var(--txt)}
+    .btn.danger{background:transparent;border:1px solid rgba(255,77,77,.6);color:var(--red)}
+    .grid{display:grid;gap:12px}
+    @media(min-width:900px){.grid.cols2{grid-template-columns:1.1fr .9fr}}
+    .card{background:linear-gradient(180deg, rgba(18,20,27,.85), rgba(15,17,23,.85)); border:1px solid var(--line);
+      border-radius:18px;padding:14px}
+    .title{display:flex;align-items:center;justify-content:space-between;gap:10px}
+    .title h2{margin:0;font-size:15px}
+    .muted{color:var(--muted);font-size:12px;line-height:1.35}
+    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    .field{display:flex;flex-direction:column;gap:6px;flex:1;min-width:180px}
+    label{font-size:12px;color:var(--muted)}
+    input,select,textarea{
+      padding:11px 12px;border-radius:12px;border:1px solid var(--line);
+      background:rgba(11,12,16,.55);color:var(--txt);outline:none
+    }
+    textarea{min-height:90px;resize:vertical}
+    input:focus,select:focus,textarea:focus{border-color:rgba(212,175,55,.7); box-shadow:0 0 0 3px rgba(212,175,55,.10)}
+    table{width:100%;border-collapse:separate;border-spacing:0 8px}
+    th{font-size:12px;color:var(--muted);text-align:left;padding:0 10px}
+    td{padding:10px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:rgba(11,12,16,.45)}
+    td:first-child{border-left:1px solid var(--line);border-radius:12px 0 0 12px}
+    td:last-child{border-right:1px solid var(--line);border-radius:0 12px 12px 0}
+    .chip{display:inline-flex;align-items:center;gap:8px;background:rgba(27,31,43,.8);border:1px solid var(--line);
+      padding:7px 10px;border-radius:999px;font-size:12px;color:var(--muted)}
+    .gold{color:var(--gold2)}
+    .ok{color:var(--ok)}
+    .warn{color:var(--gold2)}
+    .err{color:var(--red)}
+    .kpi{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+    .kpi .chip{font-weight:800}
+    .split{display:grid;gap:10px}
+    @media(min-width:700px){.split{grid-template-columns:1fr 1fr}}
+    .hr{height:1px;background:var(--line);margin:12px 0}
+    .right{margin-left:auto}
+    .small{font-size:11px;color:var(--muted)}
+    .hidden{display:none!important}
+    .center{display:flex;justify-content:center;align-items:center}
+    .big{font-size:22px;font-weight:1000;letter-spacing:.2px}
+    .envelope{padding:14px;border-radius:16px;border:1px dashed rgba(212,175,55,.6);background:rgba(212,175,55,.06)}
+    .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;}
+  </style>
+</head>
+<body>
+<header id="appHeader" class="hidden">
+  <div class="wrap">
+    <div class="toprow">
+      <div class="brand">
+        <div class="logo"></div>
+        <div>
+          <h1>Estrela de Ouro <span class="gold">2026</span></h1>
+          <div class="small">Sistema oficial • Offline + salva automático</div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="pill"><span>Temporada:</span> <strong id="seasonLabel" class="gold">2026</strong></div>
+        <button class="btn secondary" id="btnSeason">Trocar temporada</button>
+        <button class="btn danger" id="btnLogout">Sair</button>
+      </div>
+    </div>
+    <div class="tabs">
+      <button class="tab active" data-view="filmes">Filmes</button>
+      <button class="tab" data-view="notas">Notas</button>
+      <button class="tab" data-view="indicados">Indicados</button>
+      <button class="tab" data-view="vencedores">Vencedores</button>
+      <button class="tab" data-view="cerimonia">Modo Cerimônia</button>
+      <button class="tab" data-view="ajuda">Como usar</button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap" style="padding-top:18px;padding-bottom:40px">
+  <!-- LOGIN -->
+  <section id="viewLogin" class="center" style="min-height:70vh">
+    <div class="card" style="max-width:520px;width:100%">
+      <div class="title">
+        <h2 class="big">Estrela de Ouro</h2>
+        <span class="chip">Login privado</span>
+      </div>
+      <p class="muted">Entre para acessar seu sistema. Os dados ficam salvos no seu dispositivo (navegador) automaticamente.</p>
+      <div class="split">
+        <div class="field">
+          <label>Usuário</label>
+          <input id="loginUser" autocomplete="username" placeholder="hector" />
+        </div>
+        <div class="field">
+          <label>Senha</label>
+          <input id="loginPass" type="password" autocomplete="current-password" placeholder="estreladeouro" />
+        </div>
+      </div>
+      <div class="row" style="margin-top:10px">
+        <button class="btn" id="btnLogin">Entrar</button>
+        <span id="loginMsg" class="small"></span>
+      </div>
+      <div class="hr"></div>
+      <div class="small">Dica: adicione este site à Tela de Início do iPhone para usar como app.</div>
+    </div>
+  </section>
+
+  <!-- FILMES -->
+  <section id="viewFilmes" class="hidden">
+    <div class="grid cols2">
+      <div class="card">
+        <div class="title">
+          <h2>Filmes cadastrados</h2>
+          <button class="btn" id="btnNovoFilme">+ Novo filme</button>
+        </div>
+        <p class="muted">Cadastre o filme e os créditos (nomes). Depois, dê as notas na aba <b>Notas</b>.</p>
+        <div class="row">
+          <div class="field" style="min-width:240px;flex:2">
+            <label>Buscar</label>
+            <input id="filmSearch" placeholder="Digite para filtrar..." />
+          </div>
+          <div class="field" style="min-width:200px">
+            <label>Ordenar</label>
+            <select id="filmSort">
+              <option value="nome">Nome (A–Z)</option>
+              <option value="mediaGeral">Média geral (maior)</option>
+              <option value="criado">Mais recente</option>
+            </select>
+          </div>
+        </div>
+        <div class="hr"></div>
+        <div style="overflow:auto">
+          <table>
+            <thead>
+              <tr>
+                <th>Filme</th>
+                <th>Média Geral</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody id="filmTable"></tbody>
+          </table>
+        </div>
+        <div class="small">Melhor Filme usa <b>Média Geral</b> para indicar (Top 10).</div>
+      </div>
+
+      <div class="card">
+        <div class="title">
+          <h2 id="editorTitle">Editar filme</h2>
+          <span class="chip" id="editorChip">Nenhum selecionado</span>
+        </div>
+
+        <div class="row">
+          <div class="field" style="min-width:240px;flex:2">
+            <label>Nome do filme</label>
+            <input id="f_nome" placeholder="Ex.: Mercy (2026)" />
+          </div>
+          <div class="field" style="min-width:180px">
+            <label>Temporada</label>
+            <select id="f_temporada"></select>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="field">
+            <label>Tipo de roteiro (obrigatório)</label>
+            <select id="f_tipoRoteiro">
+              <option value="original">Original</option>
+              <option value="adaptado">Adaptado</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Observações (opcional)</label>
+            <input id="f_obs" placeholder="Ex.: baseado no livro..." />
+          </div>
+        </div>
+
+        <div class="hr"></div>
+        <div class="title"><h2>Créditos (nomes)</h2><span class="chip">Aparecem nas indicações</span></div>
+        <p class="muted">Preencha os nomes para as categorias que exigem “nome do indicado”.</p>
+
+        <div class="split">
+          <div class="field"><label>Diretor (Direção)</label><input id="c_diretor" placeholder="Nome do diretor" /></div>
+          <div class="field"><label>Diretor(a) de Fotografia (Fotografia)</label><input id="c_fotografia" placeholder="Nome" /></div>
+
+          <div class="field"><label>Ator (Melhor Ator)</label><input id="c_ator" placeholder="Nome" /></div>
+          <div class="field"><label>Atriz (Melhor Atriz)</label><input id="c_atriz" placeholder="Nome" /></div>
+
+          <div class="field"><label>Ator coadjuvante</label><input id="c_atorCo" placeholder="Nome" /></div>
+          <div class="field"><label>Atriz coadjuvante</label><input id="c_atrizCo" placeholder="Nome" /></div>
+
+          <div class="field"><label>Roteirista (Original)</label><input id="c_roteiroOrig" placeholder="Nome" /></div>
+          <div class="field"><label>Roteirista (Adaptado)</label><input id="c_roteiroAdap" placeholder="Nome" /></div>
+
+          <div class="field"><label>Diretor(a) de elenco</label><input id="c_elencoDir" placeholder="Nome" /></div>
+          <div class="field"><label>Editores (Montagem)</label><input id="c_editores" placeholder="Nome(s) — pode separar por vírgula" /></div>
+
+          <div class="field"><label>Designer de produção / Diretor(a) de arte (Design de Produção)</label><input id="c_designProducao" placeholder="Nome" /></div>
+          <div class="field"><label>Figurinista (Figurino)</label><input id="c_figurino" placeholder="Nome" /></div>
+
+          <div class="field"><label>Maquiagem e cabelo</label><input id="c_maquiagem" placeholder="Nome(s)" /></div>
+          <div class="field"><label>Som</label><input id="c_som" placeholder="Nome(s)" /></div>
+
+          <div class="field"><label>Efeitos visuais</label><input id="c_vfx" placeholder="Nome(s)" /></div>
+          <div class="field"><label>Compositor(a) (Trilha Sonora)</label><input id="c_trilha" placeholder="Nome" /></div>
+
+          <div class="field"><label>Canção Original — Nome da música</label><input id="c_cancaoNome" placeholder="Nome da música" /></div>
+          <div class="field"><label>Canção Original — Artista/Intérprete</label><input id="c_cancaoArtista" placeholder="Artista" /></div>
+        </div>
+
+        <div class="hr"></div>
+        <div class="row">
+          <button class="btn" id="btnSalvarFilme">Salvar filme</button>
+          <button class="btn secondary" id="btnDuplicarFilme">Duplicar (para outra temporada)</button>
+          <button class="btn danger right" id="btnExcluirFilme">Excluir</button>
+        </div>
+        <div class="small" id="saveMsg"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- NOTAS -->
+  <section id="viewNotas" class="hidden">
+    <div class="card">
+      <div class="title">
+        <h2>Notas</h2>
+        <span class="chip">0 a 10 • pode deixar vazio se não concorre</span>
+      </div>
+      <p class="muted">Selecione um filme e dê as notas por categoria. O site calcula automaticamente <b>Média Geral</b> (para indicados de Melhor Filme) e guarda tudo.</p>
+
+      <div class="row">
+        <div class="field" style="min-width:260px;flex:2">
+          <label>Filme</label>
+          <select id="notaFilme"></select>
+        </div>
+        <div class="field" style="min-width:220px">
+          <label>Categoria (atalho)</label>
+          <select id="notaAtalho"></select>
+        </div>
+        <button class="btn secondary" id="btnIrCategoria">Ir</button>
+        <div class="pill right"><span>Média Geral:</span> <strong id="mediaGeralLabel" class="gold mono">—</strong></div>
+      </div>
+
+      <div class="hr"></div>
+      <div id="notaForm" class="grid" style="gap:10px"></div>
+      <div class="hr"></div>
+      <div class="row">
+        <button class="btn" id="btnSalvarNotas">Salvar notas</button>
+        <span class="small" id="notaMsg"></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- INDICADOS -->
+  <section id="viewIndicados" class="hidden">
+    <div class="card">
+      <div class="title">
+        <h2>Indicados</h2>
+        <span class="chip">5 por categoria • 10 em Melhor Filme</span>
+      </div>
+      <p class="muted">
+        Regras:
+        <span class="chip">Melhor Filme: Top 10 por <b>Média Geral</b></span>
+        <span class="chip">Outras categorias: Top 5 pela <b>nota da própria categoria</b></span>
+      </p>
+      <div class="row">
+        <div class="field" style="min-width:260px;flex:2">
+          <label>Categoria</label>
+          <select id="indicadosCategoria"></select>
+        </div>
+        <button class="btn secondary" id="btnRecalcularIndicados">Recalcular</button>
+        <div class="pill right"><span>Temporada:</span> <strong id="indSeason" class="gold">2026</strong></div>
+      </div>
+
+      <div class="hr"></div>
+      <div id="indicadosLista"></div>
+      <div class="small">Para Melhor Filme, se houver menos de 10 filmes cadastrados, o site lista todos.</div>
+    </div>
+  </section>
+
+  <!-- VENCEDORES -->
+  <section id="viewVencedores" class="hidden">
+    <div class="card">
+      <div class="title">
+        <h2>Vencedores</h2>
+        <span class="chip">Cálculo automático</span>
+      </div>
+      <p class="muted">
+        Melhor Filme: o vencedor é calculado entre os 10 indicados com:
+        <span class="chip">Média 1 (peso 2 para “Melhor Filme”)</span>
+        e desempate:
+        <span class="chip">Se diferença &lt; 0,2 → soma com Média 2 (Fotografia + Elenco)</span>.
+      </p>
+      <div class="row">
+        <div class="field" style="min-width:260px;flex:2">
+          <label>Categoria</label>
+          <select id="vencedorCategoria"></select>
+        </div>
+        <button class="btn secondary" id="btnRecalcularVencedores">Recalcular</button>
+        <div class="pill right"><span>Temporada:</span> <strong id="winSeason" class="gold">2026</strong></div>
+      </div>
+      <div class="hr"></div>
+      <div id="vencedorBox"></div>
+    </div>
+  </section>
+
+  <!-- CERIMONIA -->
+  <section id="viewCerimonia" class="hidden">
+    <div class="card">
+      <div class="title">
+        <h2>Modo Cerimônia</h2>
+        <span class="chip">Revelar por categoria</span>
+      </div>
+      <p class="muted">Perfeito para a noite da premiação. Você escolhe a categoria e revela indicados e vencedor com um clique (sem spoilers antes).</p>
+      <div class="row">
+        <div class="field" style="min-width:260px;flex:2">
+          <label>Categoria</label>
+          <select id="cerCategoria"></select>
+        </div>
+        <button class="btn secondary" id="btnAbrirEnvelope">Abrir envelope</button>
+        <button class="btn danger" id="btnResetCer">Reset cerimônia (temporada)</button>
+        <div class="pill right"><span>Temporada:</span> <strong id="cerSeason" class="gold">2026</strong></div>
+      </div>
+      <div class="hr"></div>
+      <div id="cerConteudo" class="envelope"></div>
+      <div class="small">Reset fecha todas as categorias desta temporada (não apaga notas).</div>
+    </div>
+  </section>
+
+  <!-- AJUDA -->
+  <section id="viewAjuda" class="hidden">
+    <div class="card">
+      <div class="title"><h2>Como usar (rápido)</h2><span class="chip">Estrela de Ouro</span></div>
+      <ol class="muted">
+        <li><b>Filmes</b>: cadastre cada filme e preencha os <b>nomes</b> (diretor, atores, fotografia, editores, etc.).</li>
+        <li><b>Notas</b>: selecione um filme e dê notas 0–10 por categoria. Deixe vazio se não concorrer.</li>
+        <li><b>Indicados</b>: escolha a categoria e veja os indicados:
+          <ul>
+            <li><b>Melhor Filme</b> = Top 10 por <b>Média Geral</b>.</li>
+            <li>Outras categorias = Top 5 pela <b>nota da própria categoria</b>.</li>
+          </ul>
+        </li>
+        <li><b>Vencedores</b>: calcula automaticamente os vencedores. Para <b>Melhor Filme</b>, usa peso 2 na nota de “Melhor Filme”.</li>
+        <li><b>Modo Cerimônia</b>: selecione a categoria e clique <b>Abrir envelope</b> para revelar sem spoiler.</li>
+      </ol>
+      <div class="hr"></div>
+      <div class="muted">
+        <b>Publicar grátis (GitHub Pages):</b>
+        <ol>
+          <li>Crie uma conta no GitHub.</li>
+          <li>Crie um repositório chamado <span class="mono">estrela-de-ouro</span> (público).</li>
+          <li>Envie os arquivos deste site (index.html) para o repositório.</li>
+          <li>Vá em <span class="mono">Settings → Pages</span> e selecione <span class="mono">Deploy from branch</span> + <span class="mono">main / root</span>.</li>
+          <li>Seu link fica em <span class="mono">https://SEUUSUARIO.github.io/estrela-de-ouro</span>.</li>
+        </ol>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+/* ==========================
+   CONFIG
+========================== */
+const AUTH = { user: "hector", pass: "estreladeouro" };
+const DEFAULT_SEASON = "2026";
+const BEST_PICTURE_WEIGHT = 2; // peso do "Melhor Filme"
+
+// Categorias (todas do Oscar + extras já existentes na sua planilha)
+const CATEGORIES = [
+  // principais
+  { key:"melhorFilme", label:"Melhor Filme", nominees:10, creditKey:null },
+  { key:"direcao", label:"Melhor Direção", nominees:5, creditKey:"diretor" },
+  { key:"ator", label:"Melhor Ator", nominees:5, creditKey:"ator" },
+  { key:"atriz", label:"Melhor Atriz", nominees:5, creditKey:"atriz" },
+  { key:"atorCo", label:"Melhor Ator Coadjuvante", nominees:5, creditKey:"atorCo" },
+  { key:"atrizCo", label:"Melhor Atriz Coadjuvante", nominees:5, creditKey:"atrizCo" },
+  { key:"roteiroOriginal", label:"Melhor Roteiro Original", nominees:5, creditKey:"roteiroOrig" },
+  { key:"roteiroAdaptado", label:"Melhor Roteiro Adaptado", nominees:5, creditKey:"roteiroAdap" },
+  // outros
+  { key:"elenco", label:"Melhor Elenco", nominees:5, creditKey:"elencoDir" },
+  { key:"animacao", label:"Melhor Animação", nominees:5, creditKey:null },
+  { key:"internacional", label:"Melhor Filme Internacional", nominees:5, creditKey:null },
+  { key:"documentario", label:"Melhor Documentário", nominees:5, creditKey:null },
+  // técnicas
+  { key:"fotografia", label:"Melhor Fotografia", nominees:5, creditKey:"fotografia" },
+  { key:"montagem", label:"Melhor Montagem", nominees:5, creditKey:"editores" },
+  { key:"designProducao", label:"Melhor Design de Produção", nominees:5, creditKey:"designProducao" },
+  { key:"figurino", label:"Melhor Figurino", nominees:5, creditKey:"figurino" },
+  { key:"maquiagem", label:"Melhor Maquiagem e Cabelo", nominees:5, creditKey:"maquiagem" },
+  { key:"som", label:"Melhor Som", nominees:5, creditKey:"som" },
+  { key:"vfx", label:"Melhores Efeitos Visuais", nominees:5, creditKey:"vfx" },
+  { key:"trilha", label:"Melhor Trilha Sonora", nominees:5, creditKey:"trilha" },
+  { key:"cancao", label:"Melhor Canção Original", nominees:5, creditKey:"cancao" },
+  // curtas
+  { key:"curtaDoc", label:"Melhor Curta Documentário", nominees:5, creditKey:null },
+  { key:"curtaAnim", label:"Melhor Curta de Animação", nominees:5, creditKey:null },
+  { key:"curtaLive", label:"Melhor Curta Live-Action", nominees:5, creditKey:null },
+];
+
+const MEDIA_GERAL_EXCLUDE = new Set(["criadoEm","atualizadoEm","nome","temporada","tipoRoteiro","obs","credits","scores","id"]);
+
+/* ==========================
+   STORAGE
+========================== */
+function lsGet(key, fallback){
+  try{ const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; }catch(e){ return fallback; }
+}
+function lsSet(key, value){ localStorage.setItem(key, JSON.stringify(value)); }
+
+const DB_KEY = "edb_v1"; // database
+function dbLoad(){
+  return lsGet(DB_KEY, { seasons:[DEFAULT_SEASON], currentSeason:DEFAULT_SEASON, films:[], ceremony:{} });
+}
+function dbSave(db){ lsSet(DB_KEY, db); }
+
+/* ==========================
+   HELPERS
+========================== */
+function uid(){ return Math.random().toString(16).slice(2) + Date.now().toString(16); }
+function clampScore(v){
+  if(v === "" || v === null || typeof v === "undefined") return null;
+  const n = Number(v);
+  if(Number.isNaN(n)) return null;
+  return Math.max(0, Math.min(10, n));
+}
+function fmt(n){ return (n===null || typeof n==="undefined" || Number.isNaN(n)) ? "—" : (Math.round(n*100)/100).toFixed(2); }
+
+function getCategory(key){ return CATEGORIES.find(c=>c.key===key); }
+function seasonFilms(db, season){ return db.films.filter(f=>f.temporada===season); }
+
+function creditText(film, catKey){
+  const cat = getCategory(catKey);
+  if(!cat || !cat.creditKey) return "";
+  const c = film.credits || {};
+  if(cat.creditKey === "cancao"){
+    const nome = (c.cancaoNome || "").trim();
+    const artista = (c.cancaoArtista || "").trim();
+    if(!nome && !artista) return "";
+    if(nome && artista) return `${nome} — ${artista}`;
+    return nome || artista;
+  }
+  const map = {
+    diretor:"Diretor: ",
+    ator:"",
+    atriz:"",
+    atorCo:"",
+    atrizCo:"",
+    fotografia:"",
+    roteiroOrig:"",
+    roteiroAdap:"",
+    elencoDir:"",
+    editores:"Editores: ",
+    designProducao:"",
+    figurino:"",
+    maquiagem:"",
+    som:"",
+    vfx:"",
+    trilha:"",
+  };
+  const val = (c[cat.creditKey] || "").trim();
+  if(!val) return "";
+  return (map[cat.creditKey]||"") + val;
+}
+
+function roteiroValidoScore(film){
+  const t = film.tipoRoteiro || "original";
+  const s = film.scores || {};
+  if(t === "original") return clampScore(s.roteiroOriginal);
+  return clampScore(s.roteiroAdaptado);
+}
+
+// Média geral: média de todas as notas preenchidas (scores)
+function mediaGeral(film){
+  const s = film.scores || {};
+  const vals = [];
+  for(const cat of CATEGORIES){
+    const v = clampScore(s[cat.key]);
+    if(v!==null) vals.push(v);
+  }
+  if(vals.length===0) return null;
+  return vals.reduce((a,b)=>a+b,0)/vals.length;
+}
+
+// Média 1 (vencedor BF) com peso 2 para "Melhor Filme"
+function media1BestPicture(film){
+  const s = film.scores || {};
+  const parts = [];
+  const weights = [];
+
+  // Melhor Filme com peso 2
+  const bf = clampScore(s.melhorFilme);
+  if(bf!==null){ parts.push(bf); weights.push(BEST_PICTURE_WEIGHT); }
+
+  // Direção, atuações, montagem
+  for(const k of ["direcao","ator","atriz","atorCo","atrizCo","montagem"]){
+    const v = clampScore(s[k]);
+    if(v!==null){ parts.push(v); weights.push(1); }
+  }
+
+  // Roteiro válido
+  const rv = roteiroValidoScore(film);
+  if(rv!==null){ parts.push(rv); weights.push(1); }
+
+  if(parts.length===0) return null;
+  let num=0, den=0;
+  for(let i=0;i<parts.length;i++){ num += parts[i]*weights[i]; den += weights[i]; }
+  return num/den;
+}
+
+// Média 2 desempate (Fotografia + Elenco)
+function media2BestPicture(film){
+  const s = film.scores || {};
+  const a = clampScore(s.fotografia);
+  const b = clampScore(s.elenco);
+  const vals = [];
+  if(a!==null) vals.push(a);
+  if(b!==null) vals.push(b);
+  if(vals.length===0) return null;
+  return vals.reduce((x,y)=>x+y,0)/vals.length;
+}
+
+/* ==========================
+   NOMINEES & WINNERS
+========================== */
+function computeNominees(db, season){
+  const films = seasonFilms(db, season);
+
+  // Melhor Filme: Top 10 por média geral
+  const bf = [...films].map(f=>({id:f.id, v:mediaGeral(f)}))
+    .filter(x=>x.v!==null)
+    .sort((a,b)=>b.v-a.v)
+    .slice(0,10)
+    .map(x=>x.id);
+
+  const out = { melhorFilme: bf };
+
+  // Outras categorias: Top 5 pela nota da categoria
+  for(const cat of CATEGORIES){
+    if(cat.key==="melhorFilme") continue;
+    const arr = films.map(f=>({id:f.id, v: clampScore((f.scores||{})[cat.key])}))
+      .filter(x=>x.v!==null)
+      .sort((a,b)=>b.v-a.v)
+      .slice(0,cat.nominees)
+      .map(x=>x.id);
+    out[cat.key]=arr;
+  }
+  return out;
+}
+
+function computeWinner(db, season, catKey, nominees){
+  const films = seasonFilms(db, season);
+  const byId = Object.fromEntries(films.map(f=>[f.id,f]));
+  const ids = (nominees && nominees[catKey]) ? nominees[catKey] : [];
+
+  if(catKey==="melhorFilme"){
+    const pool = ids.map(id=>byId[id]).filter(Boolean);
+    if(pool.length===0) return { winnerId:null, detail:"Sem indicados." };
+
+    const ranked = pool.map(f=>({id:f.id, m1:media1BestPicture(f), m2:media2BestPicture(f)}))
+      .filter(x=>x.m1!==null)
+      .sort((a,b)=>b.m1-a.m1);
+
+    if(ranked.length===0) return { winnerId:null, detail:"Sem notas suficientes para Média 1." };
+
+    const first = ranked[0];
+    const second = ranked[1];
+    let detail = `Média 1 (peso 2 em “Melhor Filme”): ${fmt(first.m1)}`;
+
+    if(second && Math.abs(first.m1 - second.m1) < 0.2){
+      // desempate: soma m1 + m2
+      const scored = ranked.map(x=>({
+        id:x.id,
+        total: (x.m1 ?? 0) + (x.m2 ?? 0),
+        m1:x.m1, m2:x.m2
+      })).sort((a,b)=>b.total-a.total);
+
+      const w = scored[0];
+      detail = `Diferença < 0,2 entre 1º e 2º → Desempate ativado.\n`+
+               `Média 1: ${fmt(w.m1)} | Média 2 (Fotografia+Elenco): ${fmt(w.m2)} | Soma: ${fmt(w.total)}`;
+      return { winnerId:w.id, detail };
+    }
+    return { winnerId:first.id, detail };
+  }
+
+  // outras categorias: maior nota dentro dos indicados
+  const cat = getCategory(catKey);
+  const pool = ids.map(id=>byId[id]).filter(Boolean);
+  if(pool.length===0) return { winnerId:null, detail:"Sem indicados." };
+  const ranked = pool.map(f=>({id:f.id, v: clampScore((f.scores||{})[catKey])}))
+    .filter(x=>x.v!==null)
+    .sort((a,b)=>b.v-a.v);
+
+  if(ranked.length===0) return { winnerId:null, detail:"Sem notas nesta categoria." };
+  return { winnerId: ranked[0].id, detail:`Maior nota na categoria: ${fmt(ranked[0].v)}` };
+}
+
+/* ==========================
+   UI
+========================== */
+const el = (id)=>document.getElementById(id);
+const views = ["Login","Filmes","Notas","Indicados","Vencedores","Cerimonia","Ajuda"];
+function showView(name){
+  for(const v of views){
+    const sec = el("view"+v);
+    if(sec) sec.classList.toggle("hidden", v!==name);
+  }
+  document.querySelectorAll(".tab").forEach(t=>t.classList.toggle("active", t.dataset.view.toLowerCase()===name.toLowerCase()));
+}
+function setHeaderVisible(on){ el("appHeader").classList.toggle("hidden", !on); }
+
+function toast(node, msg, cls=""){
+  node.className = "small " + cls;
+  node.textContent = msg;
+  setTimeout(()=>{ if(node.textContent===msg) node.textContent=""; }, 2200);
+}
+
+let DB = dbLoad();
+let session = lsGet("edb_session", { logged:false });
+let selectedFilmId = null;
+
+function seasonsEnsure(){
+  if(!DB.seasons || DB.seasons.length===0) DB.seasons=[DEFAULT_SEASON];
+  if(!DB.currentSeason) DB.currentSeason=DEFAULT_SEASON;
+  if(!DB.seasons.includes(DB.currentSeason)) DB.currentSeason=DB.seasons[0];
+}
+
+function renderSeasonSelectors(){
+  seasonsEnsure();
+  el("seasonLabel").textContent = DB.currentSeason;
+  el("indSeason").textContent = DB.currentSeason;
+  el("winSeason").textContent = DB.currentSeason;
+  el("cerSeason").textContent = DB.currentSeason;
+
+  // film editor season dropdown
+  const s = el("f_temporada");
+  s.innerHTML = "";
+  DB.seasons.forEach(y=>{
+    const opt=document.createElement("option");
+    opt.value=y; opt.textContent=y;
+    s.appendChild(opt);
+  });
+}
+
+function renderFilmTable(){
+  const season = DB.currentSeason;
+  const films = seasonFilms(DB, season);
+  const q = (el("filmSearch").value||"").toLowerCase().trim();
+  let rows = films.filter(f=>!q || (f.nome||"").toLowerCase().includes(q));
+
+  const sort = el("filmSort").value;
+  if(sort==="nome"){
+    rows.sort((a,b)=>(a.nome||"").localeCompare(b.nome||""));
+  }else if(sort==="mediaGeral"){
+    rows.sort((a,b)=>(mediaGeral(b)??-1)-(mediaGeral(a)??-1));
+  }else{
+    rows.sort((a,b)=>(b.atualizadoEm||0)-(a.atualizadoEm||0));
+  }
+
+  const tb = el("filmTable");
+  tb.innerHTML="";
+  rows.forEach(f=>{
+    const tr=document.createElement("tr");
+    const mg = mediaGeral(f);
+    tr.innerHTML = `
+      <td><b>${escapeHtml(f.nome||"(sem nome)")}</b><div class="small">${escapeHtml(f.obs||"")}</div></td>
+      <td class="mono gold">${fmt(mg)}</td>
+      <td>
+        <button class="btn secondary" data-act="edit" data-id="${f.id}">Editar</button>
+        <button class="btn secondary" data-act="notes" data-id="${f.id}">Notas</button>
+      </td>`;
+    tb.appendChild(tr);
+  });
+
+  tb.querySelectorAll("button").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      const id=btn.dataset.id;
+      if(btn.dataset.act==="edit"){ openFilmEditor(id); }
+      if(btn.dataset.act==="notes"){ selectedFilmId=id; showView("Notas"); renderNotas(); }
+    });
+  });
+}
+
+function escapeHtml(s){
+  return String(s??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;");
+}
+
+function openFilmEditor(id){
+  const f = DB.films.find(x=>x.id===id);
+  if(!f) return;
+  selectedFilmId = id;
+  el("editorTitle").textContent = "Editar filme";
+  el("editorChip").textContent = "ID: " + id.slice(-6);
+  el("f_nome").value = f.nome||"";
+  el("f_temporada").value = f.temporada||DB.currentSeason;
+  el("f_tipoRoteiro").value = f.tipoRoteiro||"original";
+  el("f_obs").value = f.obs||"";
+  const c = f.credits||{};
+  el("c_diretor").value = c.diretor||"";
+  el("c_fotografia").value = c.fotografia||"";
+  el("c_ator").value = c.ator||"";
+  el("c_atriz").value = c.atriz||"";
+  el("c_atorCo").value = c.atorCo||"";
+  el("c_atrizCo").value = c.atrizCo||"";
+  el("c_roteiroOrig").value = c.roteiroOrig||"";
+  el("c_roteiroAdap").value = c.roteiroAdap||"";
+  el("c_elencoDir").value = c.elencoDir||"";
+  el("c_editores").value = c.editores||"";
+  el("c_designProducao").value = c.designProducao||"";
+  el("c_figurino").value = c.figurino||"";
+  el("c_maquiagem").value = c.maquiagem||"";
+  el("c_som").value = c.som||"";
+  el("c_vfx").value = c.vfx||"";
+  el("c_trilha").value = c.trilha||"";
+  el("c_cancaoNome").value = c.cancaoNome||"";
+  el("c_cancaoArtista").value = c.cancaoArtista||"";
+}
+
+function newFilm(){
+  const f = {
+    id: uid(),
+    nome: "",
+    temporada: DB.currentSeason,
+    tipoRoteiro: "original",
+    obs: "",
+    credits: {},
+    scores: {},
+    criadoEm: Date.now(),
+    atualizadoEm: Date.now()
+  };
+  DB.films.push(f);
+  dbSave(DB);
+  openFilmEditor(f.id);
+  renderFilmTable();
+  toast(el("saveMsg"), "Novo filme criado. Preencha e salve.", "ok");
+}
+
+function saveFilm(){
+  if(!selectedFilmId) return toast(el("saveMsg"), "Selecione um filme.", "err");
+  const f = DB.films.find(x=>x.id===selectedFilmId);
+  if(!f) return;
+  f.nome = el("f_nome").value.trim();
+  f.temporada = el("f_temporada").value;
+  f.tipoRoteiro = el("f_tipoRoteiro").value;
+  f.obs = el("f_obs").value.trim();
+  f.credits = {
+    diretor: el("c_diretor").value.trim(),
+    fotografia: el("c_fotografia").value.trim(),
+    ator: el("c_ator").value.trim(),
+    atriz: el("c_atriz").value.trim(),
+    atorCo: el("c_atorCo").value.trim(),
+    atrizCo: el("c_atrizCo").value.trim(),
+    roteiroOrig: el("c_roteiroOrig").value.trim(),
+    roteiroAdap: el("c_roteiroAdap").value.trim(),
+    elencoDir: el("c_elencoDir").value.trim(),
+    editores: el("c_editores").value.trim(),
+    designProducao: el("c_designProducao").value.trim(),
+    figurino: el("c_figurino").value.trim(),
+    maquiagem: el("c_maquiagem").value.trim(),
+    som: el("c_som").value.trim(),
+    vfx: el("c_vfx").value.trim(),
+    trilha: el("c_trilha").value.trim(),
+    cancaoNome: el("c_cancaoNome").value.trim(),
+    cancaoArtista: el("c_cancaoArtista").value.trim(),
+  };
+  f.atualizadoEm = Date.now();
+
+  // keep season list updated
+  if(!DB.seasons.includes(f.temporada)) DB.seasons.push(f.temporada);
+  DB.currentSeason = DEFAULT_SEASON; // sempre inicia em 2026 no topo, mas permite trocar
+  seasonsEnsure();
+  dbSave(DB);
+
+  renderSeasonSelectors();
+  renderFilmTable();
+  renderFilmSelects();
+  toast(el("saveMsg"), "Filme salvo ✅", "ok");
+}
+
+function deleteFilm(){
+  if(!selectedFilmId) return;
+  const f = DB.films.find(x=>x.id===selectedFilmId);
+  if(!f) return;
+  if(!confirm("Excluir este filme? Isso apaga créditos e notas deste filme.")) return;
+  DB.films = DB.films.filter(x=>x.id!==selectedFilmId);
+  selectedFilmId=null;
+  dbSave(DB);
+  el("editorChip").textContent="Nenhum selecionado";
+  el("f_nome").value="";
+  renderFilmTable();
+  renderFilmSelects();
+}
+
+function duplicateFilm(){
+  if(!selectedFilmId) return;
+  const f = DB.films.find(x=>x.id===selectedFilmId);
+  if(!f) return;
+  const copy = JSON.parse(JSON.stringify(f));
+  copy.id = uid();
+  copy.temporada = prompt("Para qual temporada duplicar? (ex.: 2027)", String(Number(f.temporada)+1)) || f.temporada;
+  copy.criadoEm = Date.now();
+  copy.atualizadoEm = Date.now();
+  DB.films.push(copy);
+  if(!DB.seasons.includes(copy.temporada)) DB.seasons.push(copy.temporada);
+  dbSave(DB);
+  toast(el("saveMsg"), "Duplicado ✅", "ok");
+  renderSeasonSelectors();
+  renderFilmTable();
+  renderFilmSelects();
+}
+
+function renderFilmSelects(){
+  const season = DB.currentSeason;
+  const films = seasonFilms(DB, season).sort((a,b)=>(a.nome||"").localeCompare(b.nome||""));
+  const sel = el("notaFilme");
+  sel.innerHTML="";
+  films.forEach(f=>{
+    const opt=document.createElement("option");
+    opt.value=f.id; opt.textContent=f.nome||"(sem nome)";
+    sel.appendChild(opt);
+  });
+  if(selectedFilmId && films.some(x=>x.id===selectedFilmId)) sel.value=selectedFilmId;
+  else if(films[0]){ selectedFilmId = films[0].id; sel.value=selectedFilmId; }
+
+  // category selects
+  const fillCat = (node)=>{
+    node.innerHTML="";
+    CATEGORIES.forEach(c=>{
+      const opt=document.createElement("option");
+      opt.value=c.key; opt.textContent=c.label;
+      node.appendChild(opt);
+    });
+  };
+  fillCat(el("notaAtalho"));
+  fillCat(el("indicadosCategoria"));
+  fillCat(el("vencedorCategoria"));
+  fillCat(el("cerCategoria"));
+}
+
+function renderNotas(){
+  renderFilmSelects();
+  const f = DB.films.find(x=>x.id===selectedFilmId);
+  if(!f){ el("notaForm").innerHTML="<div class='muted'>Nenhum filme nesta temporada.</div>"; return; }
+
+  // média geral label
+  el("mediaGeralLabel").textContent = fmt(mediaGeral(f));
+
+  const container = el("notaForm");
+  container.innerHTML="";
+  CATEGORIES.forEach(cat=>{
+    const v = (f.scores||{})[cat.key];
+    const field = document.createElement("div");
+    field.className="card";
+    field.style.padding="12px";
+    const credit = creditText(f, cat.key);
+    const creditLine = credit ? `<div class="small gold">${escapeHtml(credit)}</div>` : `<div class="small muted">—</div>`;
+    field.innerHTML = `
+      <div class="title">
+        <h2>${escapeHtml(cat.label)}</h2>
+        <span class="chip">${cat.key==="melhorFilme" ? "10 indicados" : "5 indicados"}</span>
+      </div>
+      <div class="muted">Nota (0–10). Deixe vazio se não concorrer.</div>
+      <div class="row" style="margin-top:8px">
+        <div class="field" style="min-width:180px;flex:0.7">
+          <label>Nota</label>
+          <input inputmode="decimal" placeholder="Ex.: 8.7" data-score="${cat.key}" value="${v ?? ""}">
+        </div>
+        <div class="field" style="min-width:240px;flex:1.3">
+          <label>Indicado (nome)</label>
+          ${creditLine}
+        </div>
+      </div>
+    `;
+    container.appendChild(field);
+  });
+}
+
+function saveNotas(){
+  const f = DB.films.find(x=>x.id===selectedFilmId);
+  if(!f) return;
+  const inputs = document.querySelectorAll("#notaForm input[data-score]");
+  f.scores = f.scores || {};
+  inputs.forEach(inp=>{
+    const key = inp.dataset.score;
+    const val = clampScore(inp.value.trim());
+    if(val===null) delete f.scores[key];
+    else f.scores[key]=val;
+  });
+
+  // regra: roteiro só em um tipo — zera o outro se preenchido
+  if(f.tipoRoteiro==="original"){
+    // pode manter nota adaptado salva, mas não conta no vencedor BF; para evitar confusão, limpamos se quiser
+    // aqui só deixamos, mas indicados de Roteiro Adaptado usa nota da categoria; então NÃO apagamos automaticamente.
+  }
+
+  f.atualizadoEm = Date.now();
+  dbSave(DB);
+  el("mediaGeralLabel").textContent = fmt(mediaGeral(f));
+  toast(el("notaMsg"), "Notas salvas ✅", "ok");
+  renderFilmTable(); // atualiza médias
+}
+
+function renderIndicados(){
+  renderFilmSelects();
+  const catKey = el("indicadosCategoria").value;
+  const nominees = computeNominees(DB, DB.currentSeason);
+  const ids = nominees[catKey] || [];
+  const films = seasonFilms(DB, DB.currentSeason);
+  const byId = Object.fromEntries(films.map(f=>[f.id,f]));
+  const cat = getCategory(catKey);
+
+  let html = "";
+  if(ids.length===0){
+    html = `<div class="muted">Sem indicados (faltam notas nesta categoria).</div>`;
+  }else{
+    // rank for display
+    let ranked;
+    if(catKey==="melhorFilme"){
+      ranked = ids.map(id=>({id, v: mediaGeral(byId[id])}))
+        .sort((a,b)=>(b.v??-1)-(a.v??-1));
+    }else{
+      ranked = ids.map(id=>({id, v: clampScore((byId[id].scores||{})[catKey])}))
+        .sort((a,b)=>(b.v??-1)-(a.v??-1));
+    }
+
+    html += `<div class="kpi">
+      <span class="chip">Categoria: <b class="gold">${escapeHtml(cat.label)}</b></span>
+      <span class="chip">Qtd: <b class="gold">${ids.length}</b></span>
+    </div>`;
+    html += `<div class="hr"></div>`;
+    html += `<table><thead><tr><th>#</th><th>Indicado</th><th>Filme</th><th>Nota</th></tr></thead><tbody>`;
+    ranked.forEach((r,i)=>{
+      const f = byId[r.id];
+      const credit = creditText(f, catKey);
+      const indicado = credit ? credit : "—";
+      html += `<tr>
+        <td class="mono">${i+1}</td>
+        <td><b>${escapeHtml(indicado)}</b></td>
+        <td>${escapeHtml(f.nome||"")}</td>
+        <td class="mono gold">${fmt(r.v)}</td>
+      </tr>`;
+    });
+    html += `</tbody></table>`;
+  }
+  el("indicadosLista").innerHTML = html;
+}
+
+function renderVencedores(){
+  renderFilmSelects();
+  const catKey = el("vencedorCategoria").value;
+  const nominees = computeNominees(DB, DB.currentSeason);
+  const win = computeWinner(DB, DB.currentSeason, catKey, nominees);
+  const films = seasonFilms(DB, DB.currentSeason);
+  const byId = Object.fromEntries(films.map(f=>[f.id,f]));
+  const cat = getCategory(catKey);
+
+  const ids = nominees[catKey] || [];
+  const list = ids.map(id=>byId[id]).filter(Boolean);
+
+  let html = "";
+  html += `<div class="kpi">
+    <span class="chip">Categoria: <b class="gold">${escapeHtml(cat.label)}</b></span>
+    <span class="chip">Indicados: <b class="gold">${ids.length}</b></span>
+  </div>`;
+
+  html += `<div class="hr"></div>`;
+
+  if(!win.winnerId){
+    html += `<div class="muted">Sem vencedor calculável. ${escapeHtml(win.detail||"")}</div>`;
+    el("vencedorBox").innerHTML = html;
+    return;
+  }
+
+  const wFilm = byId[win.winnerId];
+  const credit = creditText(wFilm, catKey);
+  const indicado = credit ? credit : "—";
+  html += `<div class="card" style="background:rgba(212,175,55,.06);border-color:rgba(212,175,55,.35)">
+      <div class="title">
+        <h2 class="big">🏆 Vencedor</h2>
+        <span class="chip">Temporada ${escapeHtml(DB.currentSeason)}</span>
+      </div>
+      <div class="row" style="margin-top:10px">
+        <span class="chip"><b class="gold">${escapeHtml(cat.label)}</b></span>
+        <span class="chip">Indicado: <b class="gold">${escapeHtml(indicado)}</b></span>
+        <span class="chip">Filme: <b class="gold">${escapeHtml(wFilm?.nome||"")}</b></span>
+      </div>
+      <div class="hr"></div>
+      <div class="muted mono" style="white-space:pre-wrap">${escapeHtml(win.detail||"")}</div>
+    </div>`;
+
+  // show nominees list for context
+  if(list.length){
+    let ranked;
+    if(catKey==="melhorFilme"){
+      ranked = list.map(f=>({id:f.id, v: media1BestPicture(f)})).filter(x=>x.v!==null).sort((a,b)=>b.v-a.v);
+    }else{
+      ranked = list.map(f=>({id:f.id, v: clampScore((f.scores||{})[catKey])})).filter(x=>x.v!==null).sort((a,b)=>b.v-a.v);
+    }
+
+    html += `<div class="hr"></div><table><thead><tr><th>#</th><th>Indicado</th><th>Filme</th><th>${catKey==="melhorFilme"?"Média 1":"Nota"}</th></tr></thead><tbody>`;
+    ranked.forEach((r,i)=>{
+      const f = byId[r.id];
+      const cred = creditText(f, catKey) || "—";
+      const mark = (r.id===win.winnerId) ? "🏆 " : "";
+      html += `<tr>
+        <td class="mono">${i+1}</td>
+        <td><b class="gold">${mark}${escapeHtml(cred)}</b></td>
+        <td>${escapeHtml(f.nome||"")}</td>
+        <td class="mono">${fmt(r.v)}</td>
+      </tr>`;
+    });
+    html += `</tbody></table>`;
+  }
+
+  el("vencedorBox").innerHTML = html;
+}
+
+/* ==========================
+   CEREMONY MODE
+========================== */
+function cerKey(season){ return "cer_"+season; }
+function getCeremonyState(season){
+  const all = DB.ceremony || {};
+  return all[season] || {};
+}
+function setCeremonyState(season, state){
+  DB.ceremony = DB.ceremony || {};
+  DB.ceremony[season]=state;
+  dbSave(DB);
+}
+function resetCeremony(){
+  if(!confirm("Resetar a cerimônia desta temporada? (fecha envelopes, não apaga notas)")) return;
+  setCeremonyState(DB.currentSeason, {});
+  renderCeremony();
+}
+function openEnvelope(){
+  const catKey = el("cerCategoria").value;
+  const state = getCeremonyState(DB.currentSeason);
+  state[catKey] = true;
+  setCeremonyState(DB.currentSeason, state);
+  renderCeremony();
+}
+function renderCeremony(){
+  renderFilmSelects();
+  const catKey = el("cerCategoria").value;
+  const cat = getCategory(catKey);
+  const state = getCeremonyState(DB.currentSeason);
+  const opened = !!state[catKey];
+
+  const nominees = computeNominees(DB, DB.currentSeason);
+  const winner = computeWinner(DB, DB.currentSeason, catKey, nominees);
+  const films = seasonFilms(DB, DB.currentSeason);
+  const byId = Object.fromEntries(films.map(f=>[f.id,f]));
+
+  const ids = nominees[catKey] || [];
+  const list = ids.map(id=>byId[id]).filter(Boolean);
+
+  if(!opened){
+    el("cerConteudo").innerHTML = `<div class="center" style="flex-direction:column;gap:8px">
+      <div class="big">🔒 Envelope fechado</div>
+      <div class="muted">Categoria: <b class="gold">${escapeHtml(cat.label)}</b></div>
+      <div class="small">Clique em <b>Abrir envelope</b> para revelar.</div>
+    </div>`;
+    return;
+  }
+
+  let html = `<div class="title"><h2>🎬 ${escapeHtml(cat.label)}</h2><span class="chip ok">ABERTO</span></div>`;
+  html += `<div class="hr"></div>`;
+
+  if(ids.length===0){
+    html += `<div class="muted">Sem indicados ainda.</div>`;
+    el("cerConteudo").innerHTML = html;
+    return;
+  }
+
+  // nominees list
+  html += `<div class="muted"><b>Indicados</b></div><ul>`;
+  list.forEach(f=>{
+    const cred = creditText(f, catKey) || "—";
+    html += `<li><b class="gold">${escapeHtml(cred)}</b> — ${escapeHtml(f.nome||"")}</li>`;
+  });
+  html += `</ul>`;
+
+  // winner
+  if(winner.winnerId){
+    const wf = byId[winner.winnerId];
+    const cred = creditText(wf, catKey) || "—";
+    html += `<div class="hr"></div>
+      <div class="big">🏆 Vencedor</div>
+      <div class="muted"><b class="gold">${escapeHtml(cred)}</b> — ${escapeHtml(wf?.nome||"")}</div>`;
+  }else{
+    html += `<div class="hr"></div><div class="muted">Sem vencedor calculável.</div>`;
+  }
+
+  el("cerConteudo").innerHTML = html;
+}
+
+/* ==========================
+   SEASON MODAL (simple)
+========================== */
+function promptSeason(){
+  const choice = prompt("Digite a temporada (ex.: 2026, 2027). Para criar nova, só digite um ano:", DB.currentSeason);
+  if(!choice) return;
+  const y = choice.trim();
+  if(!y) return;
+  if(!DB.seasons.includes(y)) DB.seasons.push(y);
+  DB.currentSeason = y;
+  dbSave(DB);
+  renderSeasonSelectors();
+  renderFilmSelects();
+  renderFilmTable();
+  renderNotas();
+  renderIndicados();
+  renderVencedores();
+  renderCeremony();
+}
+
+/* ==========================
+   EVENTS
+========================== */
+function bind(){
+  // tabs
+  document.querySelectorAll(".tab").forEach(t=>{
+    t.addEventListener("click", ()=>{
+      const v = t.dataset.view;
+      const map = { filmes:"Filmes", notas:"Notas", indicados:"Indicados", vencedores:"Vencedores", cerimonia:"Cerimonia", ajuda:"Ajuda" };
+      showView(map[v]);
+      if(map[v]==="Filmes"){ renderFilmTable(); }
+      if(map[v]==="Notas"){ renderNotas(); }
+      if(map[v]==="Indicados"){ renderIndicados(); }
+      if(map[v]==="Vencedores"){ renderVencedores(); }
+      if(map[v]==="Cerimonia"){ renderCeremony(); }
+    });
+  });
+
+  el("btnLogin").addEventListener("click", ()=>{
+    const u = el("loginUser").value.trim();
+    const p = el("loginPass").value;
+    if(u===AUTH.user && p===AUTH.pass){
+      session = { logged:true, at:Date.now() };
+      lsSet("edb_session", session);
+      el("loginMsg").textContent="";
+      bootApp();
+    }else{
+      el("loginMsg").textContent="Usuário ou senha incorretos.";
+      el("loginMsg").className="small err";
+    }
+  });
+
+  el("btnLogout").addEventListener("click", ()=>{
+    if(!confirm("Sair do sistema?")) return;
+    lsSet("edb_session", { logged:false });
+    location.reload();
+  });
+
+  el("btnSeason").addEventListener("click", promptSeason);
+
+  el("btnNovoFilme").addEventListener("click", newFilm);
+  el("btnSalvarFilme").addEventListener("click", saveFilm);
+  el("btnExcluirFilme").addEventListener("click", deleteFilm);
+  el("btnDuplicarFilme").addEventListener("click", duplicateFilm);
+
+  el("filmSearch").addEventListener("input", renderFilmTable);
+  el("filmSort").addEventListener("change", renderFilmTable);
+
+  el("notaFilme").addEventListener("change", ()=>{ selectedFilmId = el("notaFilme").value; renderNotas(); });
+  el("btnSalvarNotas").addEventListener("click", saveNotas);
+
+  el("btnIrCategoria").addEventListener("click", ()=>{
+    const k = el("notaAtalho").value;
+    const inp = document.querySelector(`#notaForm input[data-score="${k}"]`);
+    if(inp){ inp.scrollIntoView({behavior:"smooth", block:"center"}); inp.focus(); }
+  });
+
+  el("indicadosCategoria").addEventListener("change", renderIndicados);
+  el("btnRecalcularIndicados").addEventListener("click", renderIndicados);
+
+  el("vencedorCategoria").addEventListener("change", renderVencedores);
+  el("btnRecalcularVencedores").addEventListener("click", renderVencedores);
+
+  el("cerCategoria").addEventListener("change", renderCeremony);
+  el("btnAbrirEnvelope").addEventListener("click", openEnvelope);
+  el("btnResetCer").addEventListener("click", resetCeremony);
+}
+
+function bootApp(){
+  DB = dbLoad();
+  seasonsEnsure();
+
+  // sempre iniciar em 2026 quando abrir o site
+  DB.currentSeason = DEFAULT_SEASON;
+  if(!DB.seasons.includes(DEFAULT_SEASON)) DB.seasons.unshift(DEFAULT_SEASON);
+  dbSave(DB);
+
+  setHeaderVisible(true);
+  showView("Filmes");
+  renderSeasonSelectors();
+  renderFilmSelects();
+  renderFilmTable();
+  renderNotas();
+  renderIndicados();
+  renderVencedores();
+  renderCeremony();
+
+  // seed: Mercy (2026) com alguns créditos detectados anteriormente (opcional)
+  // Se já existir algo, não mexe.
+  const hasMercy = DB.films.some(f=> (f.nome||"").toLowerCase().includes("mercy") && f.temporada===DEFAULT_SEASON);
+  if(!hasMercy){
+    const mercy = {
+      id: uid(),
+      nome:"Mercy (2026)",
+      temporada: DEFAULT_SEASON,
+      tipoRoteiro: "original",
+      obs:"(pré-cadastrado)",
+      credits:{
+        atriz:"Rebecca Ferguson",
+        elencoDir:"John Papsidera",
+        editores:"Dody Dorn",
+        designProducao:"Alex McDowell",
+        trilha:"Marco van Belle"
+      },
+      scores:{},
+      criadoEm:Date.now(),
+      atualizadoEm:Date.now()
+    };
+    DB.films.push(mercy);
+    dbSave(DB);
+    renderFilmSelects();
+    renderFilmTable();
+  }
+}
+
+(function init(){
+  bind();
+  if(session && session.logged){
+    bootApp();
+    el("viewLogin").classList.add("hidden");
+  }else{
+    setHeaderVisible(false);
+    showView("Login");
+  }
+})();
+</script>
+</body>
+</html>
