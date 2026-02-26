@@ -93,6 +93,7 @@
     <div class="tabs">
       <button class="tab active" data-view="filmes">Filmes</button>
       <button class="tab" data-view="notas">Notas</button>
+      <button class="tab" data-view="nomes">Nomes</button>
       <button class="tab" data-view="indicados">Indicados</button>
       <button class="tab" data-view="vencedores">Vencedores</button>
       <button class="tab" data-view="cerimonia">Modo Cerimônia</button>
@@ -275,6 +276,42 @@
     </div>
   </section>
 
+
+  <!-- NOMES -->
+  <section id="viewNomes" class="hidden">
+    <div class="card">
+      <div class="title">
+        <h2>Nomes dos indicados</h2>
+        <span class="chip">Ex.: Melhor Diretor → Paul Thomas Anderson</span>
+      </div>
+      <p class="muted">
+        Aqui você cadastra o <b>nome do indicado</b> que aparece nas listas (diretor, atores, fotografia, etc.).
+        Dica: isso é por <b>filme</b>. Se um filme não concorre a uma categoria, você pode marcar <b>“Não concorre”</b> na aba Notas.
+      </p>
+
+      <div class="row">
+        <div class="field" style="min-width:260px;flex:2">
+          <label>Filme</label>
+          <select id="nomeFilme"></select>
+        </div>
+        <div class="field" style="min-width:260px;flex:2">
+          <label>Categoria (com nome)</label>
+          <select id="nomeCategoria"></select>
+        </div>
+        <div class="field" style="min-width:260px;flex:2">
+          <label>Nome do indicado</label>
+          <input id="nomeValor" placeholder="Ex.: Paul Thomas Anderson" />
+        </div>
+        <button class="btn" id="btnSalvarNome">Salvar</button>
+      </div>
+
+      <div class="hr"></div>
+      <div id="nomesResumo" class="muted"></div>
+      <div class="small" id="nomeMsg"></div>
+    </div>
+  </section>
+
+
   <!-- INDICADOS -->
   <section id="viewIndicados" class="hidden">
     <div class="card">
@@ -450,6 +487,12 @@ function clampScore(v){
 }
 function fmt(n){ return (n===null || typeof n==="undefined" || Number.isNaN(n)) ? "—" : (Math.round(n*100)/100).toFixed(2); }
 
+function isEligible(film, catKey){
+  film.eligible = film.eligible || {};
+  if(typeof film.eligible[catKey] === "undefined") film.eligible[catKey] = true; // padrão: concorre
+  return !!film.eligible[catKey];
+}
+
 function getCategory(key){ return CATEGORIES.find(c=>c.key===key); }
 function seasonFilms(db, season){ return db.films.filter(f=>f.temporada===season); }
 
@@ -464,27 +507,8 @@ function creditText(film, catKey){
     if(nome && artista) return `${nome} — ${artista}`;
     return nome || artista;
   }
-  const map = {
-    diretor:"Diretor: ",
-    ator:"",
-    atriz:"",
-    atorCo:"",
-    atrizCo:"",
-    fotografia:"",
-    roteiroOrig:"",
-    roteiroAdap:"",
-    elencoDir:"",
-    editores:"Editores: ",
-    designProducao:"",
-    figurino:"",
-    maquiagem:"",
-    som:"",
-    vfx:"",
-    trilha:"",
-  };
   const val = (c[cat.creditKey] || "").trim();
-  if(!val) return "";
-  return (map[cat.creditKey]||"") + val;
+  return val || "";
 }
 
 function roteiroValidoScore(film){
@@ -499,6 +523,7 @@ function mediaGeral(film){
   const s = film.scores || {};
   const vals = [];
   for(const cat of CATEGORIES){
+    if(!isEligible(film, cat.key)) continue;
     const v = clampScore(s[cat.key]);
     if(v!==null) vals.push(v);
   }
@@ -550,7 +575,7 @@ function media2BestPicture(film){
 function computeNominees(db, season){
   const films = seasonFilms(db, season);
 
-  // Melhor Filme: Top 10 por média geral
+  // Melhor Filme: Top 10 por média geral (só categorias elegíveis e com nota)
   const bf = [...films].map(f=>({id:f.id, v:mediaGeral(f)}))
     .filter(x=>x.v!==null)
     .sort((a,b)=>b.v-a.v)
@@ -559,10 +584,12 @@ function computeNominees(db, season){
 
   const out = { melhorFilme: bf };
 
-  // Outras categorias: Top 5 pela nota da categoria
+  // Outras categorias: Top 5 pela nota da categoria, mas só se o filme estiver elegível
   for(const cat of CATEGORIES){
     if(cat.key==="melhorFilme") continue;
-    const arr = films.map(f=>({id:f.id, v: clampScore((f.scores||{})[cat.key])}))
+    const arr = films
+      .filter(f => isEligible(f, cat.key))
+      .map(f=>({id:f.id, v: clampScore((f.scores||{})[cat.key])}))
       .filter(x=>x.v!==null)
       .sort((a,b)=>b.v-a.v)
       .slice(0,cat.nominees)
@@ -578,7 +605,7 @@ function computeWinner(db, season, catKey, nominees){
   const ids = (nominees && nominees[catKey]) ? nominees[catKey] : [];
 
   if(catKey==="melhorFilme"){
-    const pool = ids.map(id=>byId[id]).filter(Boolean);
+    const pool = ids.map(id=>byId[id]).filter(Boolean).filter(f=>isEligible(f, catKey));
     if(pool.length===0) return { winnerId:null, detail:"Sem indicados." };
 
     const ranked = pool.map(f=>({id:f.id, m1:media1BestPicture(f), m2:media2BestPicture(f)}))
@@ -609,7 +636,7 @@ function computeWinner(db, season, catKey, nominees){
 
   // outras categorias: maior nota dentro dos indicados
   const cat = getCategory(catKey);
-  const pool = ids.map(id=>byId[id]).filter(Boolean);
+  const pool = ids.map(id=>byId[id]).filter(Boolean).filter(f=>isEligible(f, catKey));
   if(pool.length===0) return { winnerId:null, detail:"Sem indicados." };
   const ranked = pool.map(f=>({id:f.id, v: clampScore((f.scores||{})[catKey])}))
     .filter(x=>x.v!==null)
@@ -623,7 +650,7 @@ function computeWinner(db, season, catKey, nominees){
    UI
 ========================== */
 const el = (id)=>document.getElementById(id);
-const views = ["Login","Filmes","Notas","Indicados","Vencedores","Cerimonia","Ajuda"];
+const views = ["Login","Filmes","Notas","Nomes","Indicados","Vencedores","Cerimonia","Ajuda"];
 function showView(name){
   for(const v of views){
     const sec = el("view"+v);
@@ -749,6 +776,7 @@ function newFilm(){
     obs: "",
     credits: {},
     scores: {},
+    eligible: {},
     criadoEm: Date.now(),
     atualizadoEm: Date.now()
   };
@@ -859,6 +887,28 @@ function renderFilmSelects(){
   fillCat(el("indicadosCategoria"));
   fillCat(el("vencedorCategoria"));
   fillCat(el("cerCategoria"));
+
+  // nomes (somente categorias que têm "creditKey")
+  const nFilm = el("nomeFilme");
+  if(nFilm){
+    nFilm.innerHTML="";
+    films.forEach(f=>{
+      const opt=document.createElement("option");
+      opt.value=f.id; opt.textContent=f.nome||"(sem nome)";
+      nFilm.appendChild(opt);
+    });
+    if(selectedFilmId && films.some(x=>x.id===selectedFilmId)) nFilm.value=selectedFilmId;
+  }
+
+  const nCat = el("nomeCategoria");
+  if(nCat){
+    nCat.innerHTML="";
+    CATEGORIES.filter(c=>c.creditKey).forEach(c=>{
+      const opt=document.createElement("option");
+      opt.value=c.key; opt.textContent=c.label;
+      nCat.appendChild(opt);
+    });
+  }
 }
 
 function renderNotas(){
@@ -883,8 +933,15 @@ function renderNotas(){
         <h2>${escapeHtml(cat.label)}</h2>
         <span class="chip">${cat.key==="melhorFilme" ? "10 indicados" : "5 indicados"}</span>
       </div>
-      <div class="muted">Nota (0–10). Deixe vazio se não concorrer.</div>
+      <div class="muted">Nota (0–10). Se o filme <b>não concorre</b>, desmarque “Concorre” (não vira 0).</div>
       <div class="row" style="margin-top:8px">
+        <div class="field" style="min-width:220px;flex:0.9">
+          <label>Concorre?</label>
+          <select data-elig="${cat.key}">
+            <option value="true">Sim</option>
+            <option value="false">Não</option>
+          </select>
+        </div>
         <div class="field" style="min-width:180px;flex:0.7">
           <label>Nota</label>
           <input inputmode="decimal" placeholder="Ex.: 8.7" data-score="${cat.key}" value="${v ?? ""}">
@@ -897,15 +954,51 @@ function renderNotas(){
     `;
     container.appendChild(field);
   });
+  // aplicar elegibilidade nos selects e travar campos
+  document.querySelectorAll('#notaForm select[data-elig]').forEach(sel=>{
+    const key = sel.dataset.elig;
+    const ok = isEligible(f, key);
+    sel.value = ok ? "true" : "false";
+    const inp = document.querySelector(`#notaForm input[data-score="${key}"]`);
+    if(inp){
+      inp.disabled = !ok;
+      inp.style.opacity = ok ? "1" : "0.55";
+      if(!ok) inp.value = "";
+    }
+    sel.addEventListener("change", ()=>{
+      const v = sel.value === "true";
+      f.eligible = f.eligible || {};
+      f.eligible[key] = v;
+      if(inp){
+        inp.disabled = !v;
+        inp.style.opacity = v ? "1" : "0.55";
+        if(!v) inp.value = "";
+      }
+      // atualiza a média na hora
+      el("mediaGeralLabel").textContent = fmt(mediaGeral(f));
+    });
+  });
 }
 
 function saveNotas(){
   const f = DB.films.find(x=>x.id===selectedFilmId);
   if(!f) return;
+  const eligs = document.querySelectorAll("#notaForm select[data-elig]");
+  f.eligible = f.eligible || {};
+  eligs.forEach(sel=>{
+    const key = sel.dataset.elig;
+    f.eligible[key] = (sel.value === "true");
+  });
+
   const inputs = document.querySelectorAll("#notaForm input[data-score]");
   f.scores = f.scores || {};
   inputs.forEach(inp=>{
     const key = inp.dataset.score;
+    // se não concorre, ignora completamente
+    if(f.eligible && f.eligible[key] === false){
+      delete f.scores[key];
+      return;
+    }
     const val = clampScore(inp.value.trim());
     if(val===null) delete f.scores[key];
     else f.scores[key]=val;
@@ -1039,6 +1132,43 @@ function renderVencedores(){
   el("vencedorBox").innerHTML = html;
 }
 
+
+function renderNomes(){
+  renderFilmSelects();
+  const filmId = el("nomeFilme")?.value || selectedFilmId;
+  if(!filmId){
+    el("nomesResumo").innerHTML = "<div class='muted'>Nenhum filme nesta temporada.</div>";
+    return;
+  }
+  selectedFilmId = filmId;
+  const f = DB.films.find(x=>x.id===filmId);
+  if(!f) return;
+
+  // preencher campo com valor atual
+  const catKey = el("nomeCategoria")?.value;
+  const cat = getCategory(catKey);
+  const c = f.credits || {};
+  let current = "";
+  if(cat && cat.creditKey){
+    if(cat.creditKey === "cancao"){
+      const nome = (c.cancaoNome||"").trim();
+      const artista = (c.cancaoArtista||"").trim();
+      current = (nome && artista) ? `${nome} — ${artista}` : (nome || artista || "");
+    }else{
+      current = (c[cat.creditKey] || "").trim();
+    }
+  }
+  if(el("nomeValor")) el("nomeValor").value = current;
+
+  // resumo
+  const lines = CATEGORIES.filter(x=>x.creditKey).map(x=>{
+    const txt = creditText(f, x.key);
+    return `<div class="chip"><b class="gold">${escapeHtml(x.label)}</b>: ${escapeHtml(txt || "—")}</div>`;
+  }).join(" ");
+  el("nomesResumo").innerHTML = `<div class="row" style="gap:8px;flex-wrap:wrap">${lines}</div>`;
+}
+
+
 /* ==========================
    CEREMONY MODE
 ========================== */
@@ -1134,6 +1264,7 @@ function promptSeason(){
   renderFilmSelects();
   renderFilmTable();
   renderNotas();
+  renderNomes();
   renderIndicados();
   renderVencedores();
   renderCeremony();
@@ -1147,10 +1278,11 @@ function bind(){
   document.querySelectorAll(".tab").forEach(t=>{
     t.addEventListener("click", ()=>{
       const v = t.dataset.view;
-      const map = { filmes:"Filmes", notas:"Notas", indicados:"Indicados", vencedores:"Vencedores", cerimonia:"Cerimonia", ajuda:"Ajuda" };
+      const map = { filmes:"Filmes", notas:"Notas", nomes:"Nomes", indicados:"Indicados", vencedores:"Vencedores", cerimonia:"Cerimonia", ajuda:"Ajuda" };
       showView(map[v]);
       if(map[v]==="Filmes"){ renderFilmTable(); }
       if(map[v]==="Notas"){ renderNotas(); }
+      if(map[v]==="Nomes"){ renderNomes(); }
       if(map[v]==="Indicados"){ renderIndicados(); }
       if(map[v]==="Vencedores"){ renderVencedores(); }
       if(map[v]==="Cerimonia"){ renderCeremony(); }
@@ -1196,6 +1328,33 @@ function bind(){
     if(inp){ inp.scrollIntoView({behavior:"smooth", block:"center"}); inp.focus(); }
   });
 
+  // nomes
+  if(el("nomeFilme")) el("nomeFilme").addEventListener("change", ()=>{ selectedFilmId = el("nomeFilme").value; renderNomes(); });
+  if(el("nomeCategoria")) el("nomeCategoria").addEventListener("change", renderNomes);
+  if(el("btnSalvarNome")) el("btnSalvarNome").addEventListener("click", ()=>{
+    const filmId = el("nomeFilme").value;
+    const catKey = el("nomeCategoria").value;
+    const cat = getCategory(catKey);
+    if(!filmId || !cat || !cat.creditKey) return;
+    const f = DB.films.find(x=>x.id===filmId);
+    if(!f) return;
+    f.credits = f.credits || {};
+    const val = (el("nomeValor").value || "").trim();
+    if(cat.creditKey === "cancao"){
+      // aceitar formato "Música — Artista" (se não tiver, salva como nome)
+      const parts = val.split("—").map(s=>s.trim()).filter(Boolean);
+      if(parts.length>=2){ f.credits.cancaoNome = parts[0]; f.credits.cancaoArtista = parts.slice(1).join(" — "); }
+      else{ f.credits.cancaoNome = val; f.credits.cancaoArtista = f.credits.cancaoArtista || ""; }
+    }else{
+      f.credits[cat.creditKey] = val;
+    }
+    f.atualizadoEm = Date.now();
+    dbSave(DB);
+    toast(el("nomeMsg"), "Nome salvo ✅", "ok");
+    renderNomes();
+    renderIndicados();
+  });
+
   el("indicadosCategoria").addEventListener("change", renderIndicados);
   el("btnRecalcularIndicados").addEventListener("click", renderIndicados);
 
@@ -1222,6 +1381,7 @@ function bootApp(){
   renderFilmSelects();
   renderFilmTable();
   renderNotas();
+  renderNomes();
   renderIndicados();
   renderVencedores();
   renderCeremony();
