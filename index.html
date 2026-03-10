@@ -172,6 +172,7 @@
         <div class="title">
           <h2 id="editorTitle">Editar filme</h2>
           <span class="chip" id="editorChip">Nenhum selecionado</span>
+        <button class="btn" onclick="saveFilm()" style="margin-left:10px">Salvar alterações</button>
         </div>
 
         <div class="row">
@@ -640,6 +641,7 @@ function toast(node, msg, cls=""){
 }
 
 let DB = dbLoad();
+  seedPanico7();
 let session = lsGet("edb_session", { logged:false });
 let selectedFilmId = null;
 
@@ -690,8 +692,8 @@ function renderFilmTable(){
       <td><b>${escapeHtml(f.nome||"(sem nome)")}</b><div class="small">${escapeHtml(f.obs||"")}</div></td>
       <td class="mono gold">${fmt(mg)}</td>
       <td>
-        <button type="button" class="btn secondary" data-act="edit" data-id="${f.id}">Editar</button>
-        <button type="button" class="btn secondary" data-act="notes" data-id="${f.id}">Notas</button>
+        <button class="btn secondary" data-act="edit" data-id="${f.id}">Editar</button>
+        <button class="btn secondary" data-act="notes" data-id="${f.id}">Notas</button>
       </td>`;
     tb.appendChild(tr);
   });
@@ -1207,8 +1209,28 @@ function bind(){
   el("btnResetCer").addEventListener("click", resetCeremony);
 }
 
+
+function seedPanico7(){
+  const f = DB.films.find(x => (x.nome||"").toLowerCase().includes("pânico 7") || (x.nome||"").toLowerCase().includes("scream 7"));
+  if(!f) return;
+  f.credits = f.credits || {};
+  const set = (k,v)=>{ if(!f.credits[k]) f.credits[k]=v; };
+
+  set("diretor","Kevin Williamson");
+  set("ator","Mason Gooding");
+  set("atriz","Jenna Ortega");
+  set("atorCo","Jack Champion");
+  set("atrizCo","Courteney Cox");
+  set("roteiroOrig","Kevin Williamson");
+  set("fotografia","Brett Jutkiewicz");
+  set("editores","Ken Blackwell");
+  set("designProducao","Chad Keith");
+}
+
+
 function bootApp(){
   DB = dbLoad();
+  seedPanico7();
   seasonsEnsure();
 
   // sempre iniciar em 2026 quando abrir o site
