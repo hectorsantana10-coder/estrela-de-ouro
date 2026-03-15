@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Oscar 2026 - Golden Ratings</title>
+    <style>
+        :root {
+            --gold: #D4AF37;
+            --dark-gold: #8A6F2A;
+            --black: #0a0a0a;
+            --gray: #1a1a1a;
+        }
+
+        body {
+            background-color: var(--black);
+            color: white;
+            font-family: 'Segoe UI', serif;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1, h2 { color: var(--gold); text-align: center; text-transform: uppercase; letter-spacing: 2px; }
+        
+        .container { max-width: 900px; margin: auto; border: 1px solid var(--dark-gold); padding: 20px; border-radius: 8px; }
+
+        .filme-card {
+            background: var(--gray);
+            border-left: 5px solid var(--gold);
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+
+        .grid-campos {
+            display: grid;
+            grid-template-columns: 1fr 1fr 100px;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        input {
+            background: #222;
+            border: 1px solid var(--dark-gold);
+            color: white;
+            padding: 8px;
+        }
+
+        button {
+            background: linear-gradient(to bottom, var(--gold), var(--dark-gold));
+            color: black;
+            border: none;
+            padding: 15px 30px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            font-size: 1.1em;
+            margin-top: 20px;
+        }
+
+        #resultado {
+            margin-top: 30px;
+            padding: 20px;
+            background: #000;
+            border: 2px gold double;
+        }
+
+        .vencedor { color: var(--gold); font-size: 1.5em; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>🏆 Oscar 2026 🏆</h1>
+    <p style="text-align: center;">Insira os dados dos 10 indicados para calcular o vencedor.</p>
+
+    <div id="filmes-lista">
+        </div>
+
+    <button onclick="calcularVencedor()">CALCULAR MELHOR FILME E RANKINGS</button>
+
+    <div id="resultado">
+        <h2>Resultados</h2>
+        <div id="display-vencedor"></div>
+        <div id="top5-categorias"></div>
+    </div>
+</div>
+
+<script>
+    // Lista de categorias para o formulário
+    const categoriasBase = [
+        "Melhor Filme", "Direção", "Ator", "Atriz", "Ator Coadj.", "Atriz Coadj.", 
+        "Roteiro", "Montagem", "Fotografia", "Elenco", "Trilha Sonora"
+    ];
+
+    // Gerar 10 blocos de filmes
+    const container = document.getElementById('filmes-lista');
+    for (let i = 1; i <= 10; i++) {
+        let html = `<div class="filme-card" id="filme-${i}">
+            <input type="text" placeholder="NOME DO FILME ${i}" class="titulo-filme" style="width:97%; font-weight:bold; margin-bottom:10px;">
+            <div class="grid-campos">
+                <strong>Categoria</strong> <strong>Responsável</strong> <strong>Nota</strong>
+        `;
+        categoriasBase.forEach(cat => {
+            html += `
+                <span>${cat}</span>
+                <input type="text" placeholder="Nome do(a) responsável" class="resp-${cat.replace(/ /g, '')}">
+                <input type="number" step="0.1" value="0" class="nota-${cat.replace(/ /g, '')}">
+            `;
+        });
+        html += `</div></div>`;
+        container.innerHTML += html;
+    }
+
+    function calcularVencedor() {
+        let filmesArr = [];
+
+        for (let i = 1; i <= 10; i++) {
+            const f = document.getElementById(`filme-${i}`);
+            const getVal = (cls) => parseFloat(f.querySelector('.nota-'+cls).value) || 0;
+            
+            // Cálculos específicos solicitados
+            const mediaAtuacoes = (getVal('Ator') + getVal('Atriz') + getVal('AtorCoadj.') + getVal('AtrizCoadj.')) / 4;
+            const mediaMelhorFilme = (getVal('MelhorFilme') + getVal('Direção') + mediaAtuacoes + getVal('Montagem') + getVal('Roteiro')) / 5;
+            
+            // Média Geral (todas as categorias)
+            let somaGeral = 0;
+            categoriasBase.forEach(c => somaGeral += getVal(c.replace(/ /g, '')));
+            const mediaGeral = somaGeral / categoriasBase.length;
+
+            filmesArr.push({
+                titulo: f.querySelector('.titulo-filme').value || `Filme ${i}`,
+                notaMelhorFilme: mediaMelhorFilme,
+                mediaGeral: mediaGeral,
+                fotografia: getVal('Fotografia'),
+                elenco: getVal('Elenco')
+            });
+        }
+
+        // Ordenar por nota de Melhor Filme
+        filmesArr.sort((a, b) => b.notaMelhorFilme - a.notaMelhorFilme);
+
+        let vencedor = filmesArr[0];
+        let segundo = filmesArr[1];
+
+        // Lógica de desempate
+        if (vencedor.notaMelhorFilme === segundo.notaMelhorFilme) {
+            vencedor = vencedor.mediaGeral > segundo.mediaGeral ? vencedor : segundo;
+        }
+
+        // Regra do 0.3 (Fotografia e Elenco)
+        if ((vencedor.notaMelhorFilme - segundo.notaMelhorFilme) < 0.3) {
+            const scoreA = (vencedor.fotografia + vencedor.elenco) / 2;
+            const scoreB = (segundo.fotografia + segundo.elenco) / 2;
+            vencedor = scoreA > scoreB ? vencedor : segundo;
+        }
+
+        document.getElementById('display-vencedor').innerHTML = `
+            <p>O GRANDE VENCEDOR É:</p>
+            <div class="vencedor">${vencedor.titulo.toUpperCase()}</div>
+            <p>Nota Final Calculada: ${vencedor.notaMelhorFilme.toFixed(2)}</p>
+        `;
+    }
+</script>
+
+</body>
+</html>
